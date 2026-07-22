@@ -1,0 +1,65 @@
+[
+    {
+        "adult": false,
+        "backdrop_path": "/538U9snNc2fpnOmYXAPUh3zn31H.jpg",
+        "genre_ids": [
+            28,
+            53,
+            12
+        ],
+        "id": 575265,
+        "original_language": "en",
+        "original_title": "Mission: Impossible - The Final Reckoning",
+        "overview": "Ethan Hunt and team continue their search for the terrifying AI known as the Entity \u2014 which has infiltrated intelligence networks all over the globe \u2014 with the world's governments and a mysterious ghost from Hunt's past on their trail. Joined by new allies and armed with the means to shut the Entity down for good, Hunt is in a race against time to prevent the world as we know it from changing forever.",
+        "popularity": 28.1183,
+        "poster_path": "/z53D72EAOxGRqdr7KXXWp9dJiDe.jpg",
+        "release_date": "2025-05-17",
+        "softcore": false,
+        "title": "Mission: Impossible - The Final Reckoning",
+        "video": false,
+        "vote_average": 7.173,
+        "vote_count": 2959
+    },
+    {
+        "adult": false,
+        "backdrop_path": "/IYUD7rAIXzBM91TT3Z5fILUS7n.jpg",
+        "genre_ids": [
+            80,
+            9648,
+            53
+        ],
+        "id": 414906,
+        "original_language": "en",
+        "original_title": "The Batman",
+        "overview": "In his second year of fighting crime, Batman uncovers corruption in Gotham City that connects to his own family while facing a serial killer known as the Riddler.",
+        "popularity": 30.3485,
+        "poster_path": "/74xTEgt7R36Fpooo50r9T25onhq.jpg",
+        "release_date": "2022-03-01",
+        "softcore": false,
+        "title": "The Batman",
+        "video": false,
+        "vote_average": 7.7,
+        "vote_count": 12152
+    },
+    {
+        "adult": false,
+        "backdrop_path": "/jFEy7DClkMm8nGXAwmpe577Vlq0.jpg",
+        "genre_ids": [
+            9648,
+            80,
+            16
+        ],
+        "id": 40662,
+        "original_language": "en",
+        "original_title": "Batman: Under the Red Hood",
+        "overview": "One part vigilante, one part criminal kingpin, Red Hood begins cleaning up Gotham with the efficiency of Batman, but without following the same ethical code.",
+        "popularity": 3.4413,
+        "poster_path": "/7lmHqHg1rG9b4U8MjuyQjmJ7Qm0.jpg",
+        "release_date": "2010-07-27",
+        "softcore": false,
+        "title": "Batman: Under the Red Hood",
+        "video": false,
+        "vote_average": 7.761,
+        "vote_count": 1749
+    }
+]
