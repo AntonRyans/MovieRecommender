@@ -8,6 +8,7 @@ function App() {
     const [movie, setMovie] = useState("");
     const [results, setResults] = useState([]);
     const [recommend, setRecommend] = useState([]);
+    const [selectedMovie, setSelectedMovie] = useState("");
     const [watchlist, setWatchlist] = useState([]);
     const [randomMovie, setRandomMovie] = useState(null);
     const API_URL = "https://movierecommender-xmjo.onrender.com";
@@ -53,7 +54,8 @@ function App() {
 
 }
 
-    async function getRecommendations(id) {
+    async function getRecommendations(id, title) {
+
     try {
 
         const res = await axios.get(
@@ -61,13 +63,13 @@ function App() {
         );
 
         setRecommend(res.data);
+        setSelectedMovie(title);
 
         setActiveTab("recommendations");
 
     } catch (error) {
 
         console.error(error);
-
         alert("Could not load recommendations");
 
     }
@@ -137,11 +139,11 @@ function App() {
     </button>
 
     <button
-        className={activeTab === "recommendations" ? "active" : ""}
-        onClick={() => setActiveTab("recommendations")}
-    >
-        Recommendations
-    </button>
+    className={activeTab === "recommendations" ? "active" : ""}
+    onClick={() => setActiveTab("recommendations")}
+>
+    Recommendations
+</button>
 
     <button
         className={activeTab === "watchlist" ? "active" : ""}
@@ -151,22 +153,18 @@ function App() {
 
 </div>
 
-    {
+  {
 activeTab === "random" && randomMovie && (
+    <div className="random-movie">
         <div className="movie-card random-card">
-            {
-                randomMovie.poster_path &&
+            {randomMovie.poster_path &&
                 <img
-                    src={
-                        `https://image.tmdb.org/t/p/w500${randomMovie.poster_path}`
-                    }
+                    src={`https://image.tmdb.org/t/p/w500${randomMovie.poster_path}`}
                     alt={randomMovie.title}
                 />
             }
 
-            <h2>
-                Random Pick
-            </h2>
+            <h2>Random Pick</h2>
 
             <h3>
                 {randomMovie.title}
@@ -181,21 +179,21 @@ activeTab === "random" && randomMovie && (
             </p>
 
             <button
-                onClick={() => getRecommendations(randomMovie.id)}
+                onClick={() => getRecommendations(
+                    randomMovie.id,
+                    randomMovie.title
+                )}
             >
                 Recommend Similar
             </button>
-            
-            <button
-                onClick={
-                    () => addWatchlist(randomMovie)
-                }
-            >
+
+            <button onClick={() => addWatchlist(randomMovie)}>
                 Add Watchlist
             </button>
-        </div>
 
-    )
+        </div>
+    </div>
+)
 }
 
             {
@@ -221,8 +219,10 @@ activeTab === "search" && (
 
                     <p>Rating: {m.vote_average}</p>
 
+                    <p>Overview: {m.overview}</p>
+
                     <button
-                        onClick={() => getRecommendations(m.id)}
+                        onClick={() => getRecommendations(m.id, m.title)}
                     >
                         Recommend Similar
                     </button>
@@ -241,72 +241,134 @@ activeTab === "search" && (
 }
 
 {
-activeTab === "recommendations" && (
-<>
-    <h2>Recommendations</h2>
-    <div className="recommendations">
-        {
-            recommend.length === 0 ?
-            <p>No recommendations yet.</p>
-            :
-            recommend.map(m => (
-                <div
-                    className="recommend-card"
-                    key={m.id}
-                >
-                    {
-                        m.poster_path &&
-                        <img
-                            src={`https://image.tmdb.org/t/p/w500${m.poster_path}`}
-                            alt={m.title}
-                        />
-                    }
+    activeTab === "recommendations" && (
+        <>
+            <h2>
+    Recommendations based on {selectedMovie}
+        </h2>
 
-                    <h3>{m.title}</h3>
-                    <p>{m.vote_average}</p>
-                    <button
-                        onClick={() => addWatchlist(m)}
-                    >
-                        Add Watchlist
-                    </button>
-                </div>
-            ))
-        }
-    </div>
-</>
-)
-}
+            <div className="movie-grid">
 
+                {
+                    recommend.length === 0 ?
 
-{
-    activeTab === "watchlist" && (
-        <div className="watchlist">
-            <h2>My Watchlist</h2>
-            {
-                watchlist.length === 0 ?
-                <p>No movies added yet.</p>
-                :
-                watchlist.map(m => (
-                    <div
-                        className="watchlist-item"
-                        key={m.id}
-                    >
-                        <span>{m.title}</span>
-                        <button
-                            className="delete-btn"
-                            onClick={() => removeWatchlist(m.id)}
+                    <p>
+                        No recommendations yet.
+                    </p>
+
+                    :
+
+                    recommend.map(m => (
+                        <div
+                            className="movie-card"
+                            key={m.id}
                         >
-                            Remove
+
+                            {
+                                m.poster_path &&
+                                <img
+                                    src={`https://image.tmdb.org/t/p/w500${m.poster_path}`}
+                                    alt={m.title}
+                                />
+                            }
+
+                            <h3>
+                                {m.title}
+                            </h3>
+
+                            <p>
+                                Rating: {m.vote_average}
+                            </p>
+
+                            <p>
+                                {m.overview}
+                            </p>
+
+                            <button
+                            onClick={() => getRecommendations(
+                                m.id,
+                                m.title
+                            )}
+                        >
+                            Recommend Similar
                         </button>
-                    </div>
-                ))
-            }
-        </div>
+
+                            <button
+                                onClick={() => addWatchlist(m)}
+                            >
+                                Add Watchlist
+                            </button>
+
+                        </div>
+                    ))
+                }
+
+            </div>
+        </>
     )
 }
+{
+    activeTab === "watchlist" && (
+        <>
+            <h2>
+                Watchlist
+            </h2>
 
-        </div> 
-    );        
-}             
+            <div className="movie-grid">
+
+                {
+                    watchlist.length === 0 ?
+
+                    <p>
+                        Your watchlist is empty.
+                    </p>
+
+                    :
+
+                    watchlist.map(movie => (
+                        <div
+                            className="movie-card"
+                            key={movie.id}
+                        >
+
+                            {
+                                movie.poster_path &&
+                                <img
+                                    src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
+                                    alt={movie.title}
+                                />
+                            }
+
+                            <h3>
+                                {movie.title}
+                            </h3>
+
+                            <p>
+                                Rating: {movie.vote_average}
+                            </p>
+
+                            <p>
+                                {movie.overview}
+                            </p>
+
+
+                            <button
+                                className="delete-btn"
+                                onClick={() => removeWatchlist(movie.id)}
+                            >
+                                Remove
+                            </button>
+
+                        </div>
+                    ))
+                }
+
+            </div>
+        </>
+    )
+}
+        </div>
+    );
+}
 
 export default App;
