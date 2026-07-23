@@ -114,7 +114,6 @@ def recommendations(id):
 
     url = f"{BASE_URL}/movie/{id}/recommendations"
 
-
     response = requests.get(
         url,
         params={
@@ -122,14 +121,12 @@ def recommendations(id):
         }
     )
 
+    data = response.json()
 
-    movies = response.json()["results"]
+    if "results" not in data:
+        return jsonify(data), 500
 
-    if "results" not in movies:
-        return jsonify(movies), 500
-
-    return jsonify(movies["results"][:10])
-
+    return jsonify(data["results"][:10])
 
 
 # -----------------------------
