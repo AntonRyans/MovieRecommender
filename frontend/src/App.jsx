@@ -26,8 +26,6 @@ function App() {
         );
 
         setResults(res.data);
-
-        // Switch back to Search tab
         setActiveTab("search");
 
     } catch (error) {
@@ -44,16 +42,14 @@ function App() {
     try {
 
         const res = await axios.get(
-            `${API_URL}/random`
-        );
+    `${API_URL}/random`
+);
 
         setRandomMovie(res.data);
 
-        setActiveTab("random");
-
     } catch(error) {
 
-        console.error(error);
+        console.log(error);
         alert("Could not get random movie");
 
     }
@@ -246,7 +242,6 @@ activeTab === "random" && randomMovie && (
             {
 activeTab === "search" && (
 <>
-    <h2>Search Results</h2>
 
     <div className="movie-grid">
 
