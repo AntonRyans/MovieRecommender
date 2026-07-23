@@ -12,10 +12,6 @@ function App() {
     const [selectedMovie, setSelectedMovie] = useState("");
     const [watchlist, setWatchlist] = useState([]);
     const [randomMovie, setRandomMovie] = useState(null);
-    const [genres, setGenres] = useState([]);
-    const [genre, setGenre] = useState("");
-    const [topN, setTopN] = useState(10);
-    const [topMovies, setTopMovies] = useState([]);
     
     const API_URL = "https://movierecommender-xmjo.onrender.com";
 
@@ -108,31 +104,6 @@ function App() {
 
     }
 
-    useEffect(() => {
-    async function loadGenres() {
-        const res = await axios.get(`${API_URL}/genres`);
-        setGenres(res.data);
-    }
-
-    loadGenres();
-}, []);
-
-const genreMap = {};
-
-genres.forEach(g => {
-    genreMap[g.id] = g.name;
-});
-
-    async function getTopMovies() {
-
-        const res = await axios.get(
-            `${API_URL}/top/${genre}/${topN}`
-        );
-
-        setTopMovies(res.data);
-        setActiveTab("top");
-    }
-
     return (
 
         <div className="container">
@@ -175,13 +146,6 @@ genres.forEach(g => {
 >
     Recommendations
 </button>
-
-    <button
-        className={activeTab === "top" ? "active" : ""}
-        onClick={() => setActiveTab("top")}
-    >
-        Top Movies
-    </button>
 
     <button
         className={activeTab === "watchlist" ? "active" : ""}
@@ -346,120 +310,7 @@ activeTab === "search" && (
         </>
     )
 }
-{
-    activeTab === "top" && (
-        <>
-            <h2>
-                Top {topN} Movies
-            </h2>
 
-            <div className="search-box">
-
-                <select
-                    value={genre}
-                    onChange={e => setGenre(e.target.value)}
-                >
-                    <option value="">
-                        All Genres
-                    </option>
-
-                    {genres.map(g => (
-                        <option
-                            key={g.id}
-                            value={g.id}
-                        >
-                            {g.name}
-                        </option>
-                    ))}
-                </select>
-
-                <input
-                    type="number"
-                    min="1"
-                    max="100"
-                    value={topN}
-                    onChange={e => setTopN(Number(e.target.value))}
-                    placeholder="Number of movies"
-                />
-
-                <button
-                    onClick={getTopMovies}
-                >
-                    Find
-                </button>
-
-            </div>
-
-            {
-                topMovies.length === 0 ?
-
-                <p>
-                    Select a genre (or All Genres), choose how many movies you want, then click Find.
-                </p>
-
-                :
-
-                <div className="movie-grid">
-
-                    {
-                        topMovies.map(movie => (
-
-                            <div
-                                className="movie-card"
-                                key={movie.id}
-                            >
-
-                                {
-                                    movie.poster_path && (
-                                        <img
-                                            src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                                            alt={movie.title}
-                                        />
-                                    )
-                                }
-
-                                <h3>
-                                    {movie.title}
-                                </h3>
-
-                                <p>
-                                    ⭐ {movie.vote_average.toFixed(1)}/10
-                                </p>
-
-                                <p>
-                                    {movie.overview}
-                                </p>
-
-                                <button
-                                    onClick={() =>
-                                        getRecommendations(
-                                            movie.id,
-                                            movie.title
-                                        )
-                                    }
-                                >
-                                    Recommend Similar
-                                </button>
-
-                                <button
-                                    onClick={() =>
-                                        addWatchlist(movie)
-                                    }
-                                >
-                                    Add Watchlist
-                                </button>
-
-                            </div>
-
-                        ))
-                    }
-
-                </div>
-            }
-
-        </>
-    )
-}
 
 {
     activeTab === "watchlist" && (

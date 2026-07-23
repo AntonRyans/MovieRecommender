@@ -119,51 +119,6 @@ def delete_watchlist(id):
     save_watchlist(watchlist)
     return jsonify(watchlist)
 
-@app.route("/genres")
-def get_genres():
-    try:
-        response = requests.get(
-            f"{BASE_URL}/genre/movie/list",
-            params={
-                "api_key": API_KEY
-            }
-        )
-
-        data = response.json()
-
-        return jsonify(data["genres"])
-
-    except Exception as e:
-        return jsonify({"error": str(e)})
-
-# Get Top "N" Movies
-@app.route("/top/<int:genre_id>/<int:n>")
-def top_movies(genre_id, n):
-
-    movies = []
-    page = 1
-
-    while len(movies) < n:
-
-        url = (
-            f"https://api.themoviedb.org/3/discover/movie"
-            f"?api_key={API_KEY}"
-            f"&with_genres={genre_id}"
-            f"&sort_by=vote_average.desc"
-            f"&vote_count.gte=1000"
-            f"&page={page}"
-        )
-
-        data = requests.get(url).json()
-
-        if not data["results"]:
-            break
-
-        movies.extend(data["results"])
-        page += 1
-
-    return jsonify(movies[:n])
-
 # Main Code
 if __name__=="__main__":
     app.run(debug=True)
