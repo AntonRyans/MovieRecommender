@@ -105,7 +105,7 @@ function App() {
         <div className="container">
 
             <h1>
-                TMDb Movie Database Search & Recommend
+             Movie Database 
             </h1>
 
             <div className="search-box">
