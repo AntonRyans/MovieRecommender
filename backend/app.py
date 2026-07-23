@@ -21,6 +21,11 @@ IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 
 WATCHLIST_FILE = "watchlist.json"
 
+@app.route("/")
+def home():
+    return jsonify({
+        "status": "Backend running"
+    })
 
 
 # -----------------------------
@@ -39,7 +44,12 @@ def search_movie(title):
 
     response = requests.get(url, params=params)
 
-    return jsonify(response.json()["results"][:10])
+    data = response.json()
+
+    if "results" not in data:
+        return jsonify(data), 500
+
+    return jsonify(data["results"][:10])
 
 
 # -----------------------------
@@ -86,7 +96,12 @@ def movie_details(id):
         }
     )
 
-    return jsonify(response.json())
+    data = response.json()
+
+    if "results" not in data:
+        return jsonify(data), 500
+
+    return jsonify(data["results"][:10])
 
 
 
@@ -110,7 +125,10 @@ def recommendations(id):
 
     movies = response.json()["results"]
 
-    return jsonify(movies[:10])
+    if "results" not in movies:
+        return jsonify(movies), 500
+
+    return jsonify(movies["results"][:10])
 
 
 

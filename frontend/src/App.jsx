@@ -10,7 +10,7 @@ function App() {
     const [recommend, setRecommend] = useState([]);
     const [watchlist, setWatchlist] = useState([]);
     const [randomMovie, setRandomMovie] = useState(null);
-    const API_URL = "https://your-backend-url.onrender.com";
+    const API_URL = "https://movierecommender-xmjo.onrender.com";
 
 
 
@@ -80,8 +80,8 @@ function App() {
     async function removeWatchlist(id){
 
         await axios.delete(
-            `${API_URL}/watchlist`
-        );
+    `${API_URL}/watchlist/${id}`
+    );
 
 
         setWatchlist(
