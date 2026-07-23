@@ -58,16 +58,15 @@ def random_movie():
 @app.route("/movie/<int:id>")
 def movie_details(id):
     url = f"{BASE_URL}/movie/{id}"
+
     response = requests.get(
         url,
         params={
             "api_key": API_KEY
         }
     )
-    data = response.json()
-    if "results" not in data:
-        return jsonify(data), 500
-    return jsonify(data["results"][:10])
+
+    return jsonify(response.json())
 
 # Show Recommendations
 @app.route("/recommend/<int:id>")
@@ -120,12 +119,22 @@ def delete_watchlist(id):
     save_watchlist(watchlist)
     return jsonify(watchlist)
 
-# Get Genres
 @app.route("/genres")
 def get_genres():
-    url = f"https://api.themoviedb.org/3/genre/movie/list?api_key={API_KEY}"
-    data = requests.get(url).json()
-    return jsonify(data["genres"])
+    try:
+        response = requests.get(
+            f"{BASE_URL}/genre/movie/list",
+            params={
+                "api_key": API_KEY
+            }
+        )
+
+        data = response.json()
+
+        return jsonify(data["genres"])
+
+    except Exception as e:
+        return jsonify({"error": str(e)})
 
 # Get Top "N" Movies
 @app.route("/top/<int:genre_id>/<int:n>")
