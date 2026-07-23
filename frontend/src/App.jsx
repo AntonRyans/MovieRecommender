@@ -2,7 +2,6 @@ import { useState } from "react";
 import axios from "axios";
 import "./App.css";
 
-
 function App() {
 
     const [activeTab, setActiveTab] = useState("search");
@@ -12,8 +11,6 @@ function App() {
     const [watchlist, setWatchlist] = useState([]);
     const [randomMovie, setRandomMovie] = useState(null);
     const API_URL = "https://movierecommender-xmjo.onrender.com";
-
-
 
     async function search() {
 
@@ -56,8 +53,6 @@ function App() {
 
 }
 
-
-
     async function getRecommendations(id) {
     try {
 
@@ -78,8 +73,6 @@ function App() {
     }
 }
 
-
-
     async function addWatchlist(movie) {
 
     await axios.post(
@@ -91,8 +84,6 @@ function App() {
 
     setActiveTab("watchlist");
 }
-
-
 
     async function removeWatchlist(id){
 
@@ -109,45 +100,27 @@ function App() {
 
     }
 
-
-
-
     return (
 
         <div className="container">
 
-
             <h1>
-                TMDb Movie Recommender
+                TMDb Movie Database Search & Recommend
             </h1>
 
-
-
             <div className="search-box">
-
-
                 <input
-
                     type="text"
-
                     placeholder="Search movie..."
-
                     value={movie}
-
                     onChange={
                         e => setMovie(e.target.value)
                     }
-
                 />
-
 
                 <button onClick={search}>
                     Search
                 </button>
-
-
-                
-
 
             </div>
 
@@ -172,48 +145,36 @@ function App() {
 
     <button
         className={activeTab === "watchlist" ? "active" : ""}
-        onClick={() => setActiveTab("watchlist")}
-    >
+        onClick={() => setActiveTab("watchlist")}>
         Watchlist
     </button>
 
 </div>
 
-            
-
-
     {
 activeTab === "random" && randomMovie && (
-
         <div className="movie-card random-card">
-
             {
                 randomMovie.poster_path &&
-
                 <img
                     src={
                         `https://image.tmdb.org/t/p/w500${randomMovie.poster_path}`
                     }
                     alt={randomMovie.title}
                 />
-
             }
-
 
             <h2>
                 Random Pick
             </h2>
 
-
             <h3>
                 {randomMovie.title}
             </h3>
 
-
             <p>
                 Rating: {randomMovie.vote_average}
             </p>
-
 
             <p>
                 {randomMovie.overview}
@@ -232,8 +193,6 @@ activeTab === "random" && randomMovie && (
             >
                 Add Watchlist
             </button>
-
-
         </div>
 
     )
@@ -242,17 +201,13 @@ activeTab === "random" && randomMovie && (
             {
 activeTab === "search" && (
 <>
-
     <div className="movie-grid">
-
         {
             results.map(m => (
-
                 <div
                     className="movie-card"
                     key={m.id}
                 >
-
                     {
                         m.poster_path &&
 
@@ -260,7 +215,6 @@ activeTab === "search" && (
                             src={`https://image.tmdb.org/t/p/w500${m.poster_path}`}
                             alt={m.title}
                         />
-
                     }
 
                     <h3>{m.title}</h3>
@@ -278,117 +232,81 @@ activeTab === "search" && (
                     >
                         Add Watchlist
                     </button>
-
                 </div>
-
             ))
         }
-
     </div>
 </>
 )
 }
-
-
 
 {
 activeTab === "recommendations" && (
 <>
     <h2>Recommendations</h2>
-
     <div className="recommendations">
-
         {
             recommend.length === 0 ?
-
             <p>No recommendations yet.</p>
-
             :
-
             recommend.map(m => (
-
                 <div
                     className="recommend-card"
                     key={m.id}
                 >
-
                     {
                         m.poster_path &&
-
                         <img
                             src={`https://image.tmdb.org/t/p/w500${m.poster_path}`}
                             alt={m.title}
                         />
-
                     }
 
                     <h3>{m.title}</h3>
-
                     <p>{m.vote_average}</p>
-
                     <button
                         onClick={() => addWatchlist(m)}
                     >
                         Add Watchlist
                     </button>
-
                 </div>
-
             ))
         }
-
     </div>
 </>
 )
 }
 
 
-
-
 {
     activeTab === "watchlist" && (
-
         <div className="watchlist">
-
             <h2>My Watchlist</h2>
-
             {
                 watchlist.length === 0 ?
-
                 <p>No movies added yet.</p>
-
                 :
-
                 watchlist.map(m => (
-
                     <div
                         className="watchlist-item"
                         key={m.id}
                     >
-
                         <span>{m.title}</span>
-
                         <button
                             className="delete-btn"
                             onClick={() => removeWatchlist(m.id)}
                         >
                             Remove
                         </button>
-
                     </div>
-
                 ))
             }
-
         </div>
-
     )
 }
 
         </div> 
-
     );        
-
 }             
 
 export default App;
