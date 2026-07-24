@@ -210,15 +210,12 @@ def export_watchlist():
             font=text_font
         )
 
-        # Move to next movie
         x += 220
 
-        # New row after 5 movies
         if (index + 1) % 5 == 0:
             x = 40
             y += 380
 
-    # After the for loop finishes
 
     draw.text(
         (40, height - 40),
@@ -227,7 +224,6 @@ def export_watchlist():
         font=text_font
     )
 
-    # Create PNG file in memory
     buffer = BytesIO()
 
     image.save(
@@ -237,7 +233,6 @@ def export_watchlist():
 
     buffer.seek(0)
 
-    # Send the generated image
     return send_file(
         buffer,
         mimetype="image/png",

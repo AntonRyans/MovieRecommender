@@ -202,11 +202,11 @@ activeTab === "random" && randomMovie && (
                     randomMovie.title
                 )}
             >
-                Recommend Similar
+                Recommend Similar Movies
             </button>
 
             <button onClick={() => addWatchlist(randomMovie)}>
-                Add Watchlist
+                Add to Watchlist
             </button>
 
         </div>
@@ -251,13 +251,13 @@ activeTab === "search" && (
                     <button
                         onClick={() => getRecommendations(m.id, m.title)}
                     >
-                        Recommend Similar
+                        Recommend Similar Movies
                     </button>
 
                     <button
                         onClick={() => addWatchlist(m)}
                     >
-                        Add Watchlist
+                        Add to Watchlist
                     </button>
                 </div>
             ))
@@ -325,13 +325,13 @@ activeTab === "search" && (
                                 m.title
                             )}
                         >
-                            Recommend Similar
+                            Recommend Similar Movies
                         </button>
 
                             <button
                                 onClick={() => addWatchlist(m)}
                             >
-                                Add Watchlist
+                                Add to Watchlist
                             </button>
 
                         </div>
