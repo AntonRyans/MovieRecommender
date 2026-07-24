@@ -164,48 +164,35 @@ def export_watchlist():
     for index, movie in enumerate(watchlist):
 
         poster_url = (
-            f"{request.host_url}poster/{movie['poster_path'].lstrip('/')}"
+            f"https://image.tmdb.org/t/p/w500"
+            f"{movie['poster_path']}"
         )
 
-        try:
-            response = requests.get(poster_url, timeout=10)
-            response.raise_for_status()
-
-            poster_bytes = BytesIO(response.content)
-
-            poster = Image.open(poster_bytes)
-
-            poster = (
-                    poster
-                    .convert("RGB")
-                    .resize((180, 270))
-                    .copy()
-            )
-
-            image.paste(poster, (x, y))
-
-        except:
-            draw.rectangle((x, y, x + 180, y + 270), fill="gray")
-
-        draw.text(
-            (x, y + 280),
-            movie["title"][:18],
-            fill="white",
-            font=text_font
+    try:
+        response = requests.get(
+            poster_url,
+            timeout=10
         )
 
-        draw.text(
-            (x, y + 310),
-            f"Rating: {movie['vote_average']:.1f}/10",
-            fill="gold",
-            font=text_font
+        poster = Image.open(
+            BytesIO(response.content)
         )
 
-        x += 220
+        poster = (
+            poster
+            .convert("RGB")
+            .resize((180, 270))
+        )
 
-        if (index + 1) % 5 == 0:
-            x = 40
-            y += 360
+        image.paste(poster, (x, y))
+
+    except Exception as e:
+        print("Poster failed:", movie["title"], e)
+
+        draw.rectangle(
+            (x, y, x + 180, y + 270),
+            fill="gray"
+        )
 
 
     draw.text(
