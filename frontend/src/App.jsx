@@ -104,6 +104,17 @@ function App() {
 
     }
 
+    const exportWatchlist = () => {
+    const link = document.createElement("a");
+
+    link.href = `${API_URL}/export-watchlist`;
+    link.download = "watchlist.png";
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
+
     return (
 
         <div className="container">
@@ -315,59 +326,50 @@ activeTab === "search" && (
 {
     activeTab === "watchlist" && (
         <>
-            <h2>
-                Watchlist
-            </h2>
+            <h2>Watchlist</h2>
+
+            <button
+                className="export-btn"
+                onClick={exportWatchlist}
+            >
+                📷 Export Watchlist
+            </button>
 
             <div className="movie-grid">
-
                 {
-                    watchlist.length === 0 ?
-
-                    <p>
-                        Your watchlist is empty.
-                    </p>
-
-                    :
-
-                    watchlist.map(movie => (
-                        <div
-                            className="movie-card"
-                            key={movie.id}
-                        >
-
-                            {
-                                movie.poster_path &&
-                                <img
-                                    src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                                    alt={movie.title}
-                                />
-                            }
-
-                            <h3>
-                                {movie.title}
-                            </h3>
-
-                            <p>
-                                Rating: {movie.vote_average}/10
-                            </p>
-
-                            <p>
-                                {movie.overview}
-                            </p>
-
-
-                            <button
-                                className="delete-btn"
-                                onClick={() => removeWatchlist(movie.id)}
+                    watchlist.length === 0 ? (
+                        <p>Your watchlist is empty.</p>
+                    ) : (
+                        watchlist.map(movie => (
+                            <div
+                                className="movie-card"
+                                key={movie.id}
                             >
-                                Remove
-                            </button>
+                                {movie.poster_path && (
+                                    <img
+                                    src={`https://image.tmdb.org/t/p/w500${randomMovie.poster_path}`}
+                                    alt={randomMovie.title}
+                                />
+                                )}
 
-                        </div>
-                    ))
+                                <h3>{movie.title}</h3>
+
+                                <p>
+                                    Rating: {movie.vote_average}/10
+                                </p>
+
+                                <p>{movie.overview}</p>
+
+                                <button
+                                    className="delete-btn"
+                                    onClick={() => removeWatchlist(movie.id)}
+                                >
+                                    Remove
+                                </button>
+                            </div>
+                        ))
+                    )
                 }
-
             </div>
         </>
     )

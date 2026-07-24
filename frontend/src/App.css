@@ -237,3 +237,38 @@ button:hover {
         height:250px;
     }
 }
+
+#watchlist-export{
+    background:#141414;
+    color:white;
+    padding:30px;
+    border-radius:20px;
+}
+
+.watchlist-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+    gap:20px;
+}
+
+.watch-card{
+    background:#222;
+    border-radius:12px;
+    overflow:hidden;
+    text-align:center;
+    padding:10px;
+}
+
+.watch-card img{
+    width:100%;
+    border-radius:10px;
+}
+
+.watch-card h3{
+    font-size:16px;
+    margin-top:10px;
+}
+
+.watch-card p{
+    color:#ffc107;
+}
