@@ -164,9 +164,9 @@ def export_watchlist():
     for index, movie in enumerate(watchlist):
 
         poster_url = (
-                f"https://image.tmdb.org/t/p/w500"
-                f"{movie['poster_path']}?id={movie['id']}"
-            )
+            f"{API_URL}/poster/{movie['poster_path'].lstrip('/')}"
+            f"?id={movie['id']}"
+        )
 
         try:
             response = requests.get(poster_url, timeout=10)
@@ -230,22 +230,26 @@ def export_watchlist():
 @app.route("/poster/<path:poster_path>")
 def poster(poster_path):
 
+    poster_path = poster_path.lstrip("/")
+
     url = f"https://image.tmdb.org/t/p/w500/{poster_path}"
 
     response = requests.get(
         url,
-        headers={
-            "User-Agent": "Mozilla/5.0"
-        },
         timeout=10
     )
 
+    if response.status_code != 200:
+        return jsonify({
+            "error": "Poster not found",
+            "url": url
+        }), 404
+
     return Response(
         response.content,
-        status=200,
         mimetype="image/jpeg",
         headers={
-            "Cache-Control": "no-cache, no-store, must-revalidate"
+            "Cache-Control": "public, max-age=86400"
         }
     )
 
