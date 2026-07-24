@@ -164,8 +164,7 @@ def export_watchlist():
     for index, movie in enumerate(watchlist):
 
         poster_url = (
-            f"{API_URL}/poster/{movie['poster_path'].lstrip('/')}"
-            f"?id={movie['id']}"
+            f"{request.host_url}poster/{movie['poster_path'].lstrip('/')}"
         )
 
         try:

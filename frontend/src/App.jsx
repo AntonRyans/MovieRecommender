@@ -104,15 +104,11 @@ function App() {
 
     }
 
-    const exportWatchlist = () => {
-    const link = document.createElement("a");
-
-    link.href = `${API_URL}/export-watchlist`;
-    link.download = "watchlist.png";
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+   const exportWatchlist = () => {
+    window.open(
+        `${API_URL}/export-watchlist`,
+        "_blank"
+    );
 };
 
     return (
