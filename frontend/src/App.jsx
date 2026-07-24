@@ -173,8 +173,10 @@ activeTab === "random" && randomMovie && (
         <div className="movie-card random-card">
             {randomMovie.poster_path &&
                 <img
-                    src={`https://image.tmdb.org/t/p/w500${randomMovie.poster_path}`}
-                    alt={randomMovie.title}
+                    key={movie.id}
+                    src={`${API_URL}/poster${movie.poster_path}?id=${movie.id}`}
+                    alt={movie.title}
+                    loading="lazy"
                 />
             }
 
@@ -224,8 +226,10 @@ activeTab === "search" && (
                         m.poster_path &&
 
                         <img
-                            src={`https://image.tmdb.org/t/p/w500${m.poster_path}`}
-                            alt={m.title}
+                            key={movie.id}
+                            src={`${API_URL}/poster${movie.poster_path}?id=${movie.id}`}
+                            alt={movie.title}
+                            loading="lazy"
                         />
                     }
 
@@ -281,8 +285,10 @@ activeTab === "search" && (
                             {
                                 m.poster_path &&
                                 <img
-                                    src={`https://image.tmdb.org/t/p/w500${m.poster_path}`}
-                                    alt={m.title}
+                                    key={movie.id}
+                                    src={`${API_URL}/poster${movie.poster_path}?id=${movie.id}`}
+                                    alt={movie.title}
+                                    loading="lazy"
                                 />
                             }
 
@@ -332,7 +338,7 @@ activeTab === "search" && (
                 className="export-btn"
                 onClick={exportWatchlist}
             >
-                📷 Export Watchlist
+                Export Watchlist
             </button>
 
             <div className="movie-grid">
@@ -347,9 +353,11 @@ activeTab === "search" && (
                             >
                                 {movie.poster_path && (
                                     <img
-                                    src={`https://image.tmdb.org/t/p/w500${randomMovie.poster_path}`}
-                                    alt={randomMovie.title}
-                                />
+                                        key={movie.id}
+                                        src={`${API_URL}/poster${movie.poster_path}?id=${movie.id}`}
+                                        alt={movie.title}
+                                        loading="lazy"
+                                    />
                                 )}
 
                                 <h3>{movie.title}</h3>
