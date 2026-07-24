@@ -173,10 +173,16 @@ activeTab === "random" && randomMovie && (
         <div className="movie-card random-card">
             {randomMovie.poster_path &&
                 <img
-                    key={movie.id}
-                    src={`${API_URL}/poster${movie.poster_path}?id=${movie.id}`}
-                    alt={movie.title}
+                    src={
+                        randomMovie.poster_path
+                            ? `${API_URL}/poster/${randomMovie.poster_path.replace("/", "")}`
+                            : "/no-poster.jpg"
+                    }
+                    alt={`${randomMovie.title} poster`}
                     loading="lazy"
+                    onError={(e) => {
+                        e.target.src = "/no-poster.jpg";
+                    }}
                 />
             }
 
@@ -212,7 +218,7 @@ activeTab === "random" && randomMovie && (
 )
 }
 
-            {
+{
 activeTab === "search" && (
 <>
     <div className="movie-grid">
@@ -226,12 +232,19 @@ activeTab === "search" && (
                         m.poster_path &&
 
                         <img
-                            key={movie.id}
-                            src={`${API_URL}/poster${movie.poster_path}?id=${movie.id}`}
-                            alt={movie.title}
+                            src={
+                                m.poster_path
+                                    ? `${API_URL}/poster/${m.poster_path.replace("/", "")}`
+                                    : "/no-poster.jpg"
+                            }
+                            alt={`${m.title} poster`}
                             loading="lazy"
+                            onError={(e) => {
+                                e.target.src = "/no-poster.jpg";
+                            }}
                         />
                     }
+                    
 
                     <h3>{m.title}</h3>
 
@@ -285,10 +298,16 @@ activeTab === "search" && (
                             {
                                 m.poster_path &&
                                 <img
-                                    key={movie.id}
-                                    src={`${API_URL}/poster${movie.poster_path}?id=${movie.id}`}
-                                    alt={movie.title}
+                                    src={
+                                        m.poster_path
+                                            ? `${API_URL}/poster/${m.poster_path.replace("/", "")}`
+                                            : "/no-poster.jpg"
+                                    }
+                                    alt={`${m.title} poster`}
                                     loading="lazy"
+                                    onError={(e) => {
+                                        e.target.src = "/no-poster.jpg";
+                                    }}
                                 />
                             }
 
@@ -354,9 +373,16 @@ activeTab === "search" && (
                                 {movie.poster_path && (
                                     <img
                                         key={movie.id}
-                                        src={`${API_URL}/poster${movie.poster_path}?id=${movie.id}`}
-                                        alt={movie.title}
+                                        src={
+                                            movie.poster_path
+                                                ? `${API_URL}/poster/${movie.poster_path.replace("/", "")}`
+                                                : "/no-poster.jpg"
+                                        }
+                                        alt={`${movie.title} poster`}
                                         loading="lazy"
+                                        onError={(e) => {
+                                            e.target.src = "/no-poster.jpg";
+                                        }}
                                     />
                                 )}
 
