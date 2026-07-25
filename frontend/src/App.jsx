@@ -116,7 +116,7 @@ function App() {
         <div className="container">
 
             <h1>
-             Movie Database 
+             Movie Compass - Pick A Movie 
             </h1>
 
             <div className="search-box">

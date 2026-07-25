@@ -88,7 +88,7 @@ def recommendations(id):
         return jsonify(data), 500
     return jsonify(data["results"][:10])
 
-# Show Watchlist
+# Watchlist Functions
 def load_watchlist():
     if os.path.exists(WATCHLIST_FILE):
         with open(WATCHLIST_FILE) as file:
@@ -194,7 +194,6 @@ def export_watchlist():
                 fill="gray"
             )
 
-        # Movie title
         draw.text(
             (x, y + 280),
             movie["title"][:20],
@@ -202,7 +201,6 @@ def export_watchlist():
             font=text_font
         )
 
-        # Rating
         draw.text(
             (x, y + 315),
             f"Rating: {movie['vote_average']:.1f}/10",
