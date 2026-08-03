@@ -1,38 +1,13 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Router from "./router/Router";
 
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import Home from "./App"; // your existing Movie Compass component
 
-function Router() {
+function App(){
 
     return (
-
-        <BrowserRouter>
-
-            <Routes>
-
-                <Route
-                    path="/"
-                    element={<Home />}
-                />
-
-                <Route
-                    path="/login"
-                    element={<Login />}
-                />
-
-                <Route
-                    path="/register"
-                    element={<Register />}
-                />
-
-            </Routes>
-
-        </BrowserRouter>
-
+        <Router />
     );
 
 }
 
-export default Router;
+
+export default App;

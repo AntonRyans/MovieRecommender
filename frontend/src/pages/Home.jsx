@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import "./App.css";
+import "../App.css";
 
-function App() {
+function Home() {
 
     
     const [activeTab, setActiveTab] = useState("search");
@@ -408,4 +408,4 @@ activeTab === "search" && (
     );
 }
 
-export default App;
+export default Home;

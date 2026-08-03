@@ -12,6 +12,7 @@ import math
 import random
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
+from urllib.parse import quote_plus
 from models import db
 from auth import auth
 
@@ -25,10 +26,19 @@ API_KEY = os.getenv("TMDB_API_KEY")
 BASE_URL = "https://api.themoviedb.org/3"
 IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///moviecompass.db"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db_user = os.getenv("DB_USER")
+db_password = os.getenv("DB_PASSWORD")
 
-app.config["JWT_SECRET_KEY"] = ""
+if db_password is None:
+    raise ValueError("DB_PASSWORD not found in .env")
+
+db_password = quote_plus(db_password)
+db_host = os.getenv("DB_HOST")
+db_name = os.getenv("DB_NAME")
+
+app.config["SQLALCHEMY_DATABASE_URI"] = (
+    f"mysql+pymysql://{db_user}:{db_password}@{db_host}/{db_name}?charset=utf8mb4"
+)
 
 db.init_app(app)
 

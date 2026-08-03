@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import "./Auth.css";
 
 function Login() {
 
@@ -47,13 +48,15 @@ function Login() {
 
     return (
 
-        <div className="login-page">
+        <div className="auth-page">
+
+             <div className="auth-card">
 
             <h1>Movie Compass</h1>
 
             <h2>Login</h2>
 
-            <form onSubmit={login}>
+            <form className="auth-form" onSubmit={login}>
 
                 <input
 
@@ -86,6 +89,13 @@ function Login() {
                 </button>
 
             </form>
+
+            <p className="auth-link">
+            Don't have an account?
+            <a href="/register"> Register</a>
+        </p>
+
+            </div>
 
         </div>
 

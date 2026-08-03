@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import "./Auth.css";
 
 function Register() {
 
@@ -42,13 +43,15 @@ function Register() {
 
     return (
 
-        <div className="login-page">
+        <div className="auth-page">
+
+            <div className="auth-card">
 
             <h1>Movie Compass</h1>
 
             <h2>Create Account</h2>
 
-            <form onSubmit={register}>
+            <form className="auth-form" onSubmit={register}>
 
                 <input
 
@@ -82,6 +85,7 @@ function Register() {
 
             </form>
 
+            </div>
         </div>
 
     );
