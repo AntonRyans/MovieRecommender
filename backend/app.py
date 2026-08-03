@@ -25,7 +25,7 @@ API_KEY = os.getenv("TMDB_API_KEY")
 BASE_URL = "https://api.themoviedb.org/3"
 IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 
-database_url = os.getenv("DATABASE_URL")
+database_url = os.getenv("DB_URL")
 
 if database_url is None:
     raise ValueError("DATABASE_URL not found")
