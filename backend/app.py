@@ -10,6 +10,10 @@ import json
 from dotenv import load_dotenv
 import math
 import random
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager
+from models import db
+from auth import auth
 
 load_dotenv()
 
@@ -21,7 +25,21 @@ API_KEY = os.getenv("TMDB_API_KEY")
 BASE_URL = "https://api.themoviedb.org/3"
 IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 
-WATCHLIST_FILE = "watchlist.json"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///moviecompass.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+app.config["JWT_SECRET_KEY"] = ""
+
+db.init_app(app)
+
+bcrypt = Bcrypt(app)
+
+jwt = JWTManager(app)
+
+app.register_blueprint(auth)
+
+with app.app_context():
+    db.create_all()
 
 @app.route("/")
 def home():
