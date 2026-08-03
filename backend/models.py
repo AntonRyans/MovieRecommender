@@ -7,7 +7,10 @@ class User(db.Model):
 
     __tablename__ = "users"
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
 
     username = db.Column(
         db.String(50),
@@ -20,21 +23,43 @@ class User(db.Model):
         nullable=False
     )
 
+    watchlists = db.relationship(
+        "Watchlist",
+        backref="user",
+        lazy=True
+    )
+
+
 class Watchlist(db.Model):
 
-    id = db.Column(db.Integer, primary_key=True)
+    __tablename__ = "watchlist"
 
-    movie_id = db.Column(db.Integer)
+    id = db.Column(
+        db.Integer,
+        primary_key=True
+    )
 
-    title = db.Column(db.String(200))
+    movie_id = db.Column(
+        db.Integer
+    )
 
-    poster_path = db.Column(db.String(255))
+    title = db.Column(
+        db.String(200)
+    )
 
-    rating = db.Column(db.Float)
+    poster_path = db.Column(
+        db.String(255)
+    )
 
-    overview = db.Column(db.Text)
+    rating = db.Column(
+        db.Float
+    )
+
+    overview = db.Column(
+        db.Text
+    )
 
     user_id = db.Column(
         db.Integer,
-        db.ForeignKey("user.id")
+        db.ForeignKey("users.id")
     )
