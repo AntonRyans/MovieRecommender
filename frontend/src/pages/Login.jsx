@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import "./Auth.css";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
 
@@ -9,6 +10,8 @@ function Login() {
     const [password, setPassword] = useState("");
 
     const API_URL = "https://movierecommender-1-wdhd.onrender.com";
+
+    const navigate = useNavigate();
 
     async function login(e) {
 
@@ -32,9 +35,14 @@ function Login() {
                 res.data.token
             );
 
+            localStorage.setItem(
+                "username",
+                username
+            );
+
             alert("Login successful!");
 
-            window.location.href = "/";
+            navigate("/home");
 
         }
 

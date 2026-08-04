@@ -12,6 +12,9 @@ import math
 import random
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
+from flask import request, jsonify, send_file
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from models import db, User, Watchlist
 from urllib.parse import quote_plus
 from models import db
 from auth import auth
@@ -148,154 +151,143 @@ def recommendations(id):
     return jsonify(data["results"][:10])
 
 # Watchlist Functions
-def load_watchlist():
-    if os.path.exists(WATCHLIST_FILE):
-        with open(WATCHLIST_FILE) as file:
-            return json.load(file)
-    return []
-
-def save_watchlist(data):
-    with open(WATCHLIST_FILE,"w") as file:
-        json.dump(data,file,indent=4)
-
-@app.route("/watchlist")
+@app.route("/watchlist", methods=["GET"])
+@jwt_required()
 def get_watchlist():
-    return jsonify(load_watchlist())
 
-@app.route("/watchlist",methods=["POST"])
+    username = get_jwt_identity()
+
+    user = User.query.filter_by(
+        username=username
+    ).first()
+
+    movies = Watchlist.query.filter_by(
+        user_id=user.id
+    ).all()
+
+    return jsonify([
+        {
+            "id": movie.id,
+            "movie_id": movie.movie_id,
+            "title": movie.title,
+            "poster_path": movie.poster_path,
+            "vote_average": movie.rating,
+            "overview": movie.overview
+        }
+        for movie in movies
+    ])
+
+
+@app.route("/watchlist", methods=["POST"])
+@jwt_required()
 def add_watchlist():
-    movie=request.json
-    watchlist=load_watchlist()
-    if movie["id"] not in [
-        m["id"] for m in watchlist
-    ]:
-        watchlist.append(movie)
-        save_watchlist(watchlist)
-    return jsonify(watchlist)
 
-@app.route("/watchlist/<int:id>",methods=["DELETE"])
-def delete_watchlist(id):
-    watchlist=load_watchlist()
-    watchlist=[
-        m for m in watchlist
-        if m["id"] != id
-    ]
-    save_watchlist(watchlist)
-    return jsonify(watchlist)
+    username = get_jwt_identity()
+
+    user = User.query.filter_by(
+        username=username
+    ).first()
+
+    data = request.json
+
+
+    existing = Watchlist.query.filter_by(
+        user_id=user.id,
+        movie_id=data["id"]
+    ).first()
+
+
+    if existing:
+
+        return jsonify({
+            "message": "Already in watchlist"
+        }), 400
+
+
+    movie = Watchlist(
+
+        movie_id=data["id"],
+
+        title=data["title"],
+
+        poster_path=data.get(
+            "poster_path"
+        ),
+
+        rating=data.get(
+            "vote_average"
+        ),
+
+        overview=data.get(
+            "overview"
+        ),
+
+        user_id=user.id
+    )
+
+
+    db.session.add(movie)
+
+    db.session.commit()
+
+
+    return jsonify({
+        "message": "Added to watchlist"
+    }), 201
+
+@app.route("/watchlist/<int:id>", methods=["DELETE"])
+@jwt_required()
+def remove_watchlist(id):
+
+    username = get_jwt_identity()
+
+    user = User.query.filter_by(
+        username=username
+    ).first()
+
+
+    movie = Watchlist.query.filter_by(
+        id=id,
+        user_id=user.id
+    ).first()
+
+
+    if movie is None:
+
+        return jsonify({
+            "message": "Movie not found"
+        }), 404
+
+
+    db.session.delete(movie)
+
+    db.session.commit()
+
+
+    return jsonify({
+        "message": "Removed"
+    })
 
 @app.route("/export-watchlist")
+@jwt_required()
 def export_watchlist():
-    watchlist = load_watchlist()
 
-    if len(watchlist) == 0:
-        return jsonify({"error": "Watchlist is empty"}), 400
+    username = get_jwt_identity()
 
-    width = 1200
-    rows = math.ceil(len(watchlist) / 5)
-    height = 150 + rows * 360
-
-    image = Image.new("RGB", (width, height), (18, 18, 18))
-    draw = ImageDraw.Draw(image)
-
-    try:
-        title_font = ImageFont.truetype("arial.ttf", 48)
-        text_font = ImageFont.truetype("arial.ttf", 24)
-    except:
-        title_font = ImageFont.load_default()
-        text_font = ImageFont.load_default()
-
-    title = "My Movie Watchlist"
-
-    bbox = draw.textbbox((0,0), title, font=title_font)
-
-    text_width = bbox[2] - bbox[0]
-
-    draw.text(
-        ((width - text_width)//2, 30),
-        title,
-        fill="white",
-        font=title_font
-    )
-    
-    x = 40
-    y = 120
-
-    for index, movie in enumerate(watchlist):
-
-        poster_url = (
-            f"https://image.tmdb.org/t/p/w500"
-            f"{movie['poster_path']}"
-        )
-
-        try:
-            response = requests.get(
-                poster_url,
-                timeout=10
-            )
-
-            poster = Image.open(
-                BytesIO(response.content)
-            )
-
-            poster = (
-                poster
-                .convert("RGB")
-                .resize((180, 270))
-            )
-
-            image.paste(poster, (x, y))
-
-        except Exception as e:
-            print("Poster failed:", movie["title"], e)
-
-            draw.rectangle(
-                (x, y, x + 180, y + 270),
-                fill="gray"
-            )
-
-        draw.text(
-            (x, y + 280),
-            movie["title"][:20],
-            fill="white",
-            font=text_font
-        )
-
-        draw.text(
-            (x, y + 315),
-            f"Rating: {movie['vote_average']:.1f}/10",
-            fill="gold",
-            font=text_font
-        )
-
-        x += 220
-
-        if (index + 1) % 5 == 0:
-            x = 40
-            y += 380
+    user = User.query.filter_by(
+        username=username
+    ).first()
 
 
-    draw.text(
-        (40, height - 40),
-        f"{len(watchlist)} movies in your Watchlist",
-        fill=(180, 180, 180),
-        font=text_font
-    )
+    movies = Watchlist.query.filter_by(
+        user_id=user.id
+    ).all()
 
-    buffer = BytesIO()
 
-    image.save(
-        buffer,
-        format="PNG"
-    )
-
-    buffer.seek(0)
-
-    return send_file(
-        buffer,
-        mimetype="image/png",
-        as_attachment=True,
-        download_name="watchlist.png"
-    )
+    if len(movies) == 0:
+        return jsonify({
+            "error":"Watchlist empty"
+        }),400
 
 @app.route("/poster/<path:poster_path>")
 def poster(poster_path):

@@ -15,6 +15,24 @@ function Home() {
     
     const API_URL = "https://movierecommender-1-wdhd.onrender.com";
 
+    const [username, setUsername] = useState("");
+
+    useEffect(() => {
+
+        const savedUsername = localStorage.getItem(
+            "username"
+        );
+
+        setUsername(savedUsername);
+
+    }, []);
+
+    const getAuthHeaders = () => ({
+    headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`
+    }
+});
+
     async function search() {
 
     if (!movie.trim()) return;
@@ -77,23 +95,47 @@ function Home() {
     }
 }
 
+    async function getWatchlist(){
+
+        const res = await axios.get(
+            `${API_URL}/watchlist`,
+            getAuthHeaders()
+        );
+
+        setWatchlist(res.data);
+
+    }
+
     async function addWatchlist(movie) {
 
-    await axios.post(
-        `${API_URL}/watchlist`,
-        movie
-    );
+    try {
 
-    setWatchlist([...watchlist, movie]);
+        await axios.post(
+            `${API_URL}/watchlist`,
+            movie,
+            getAuthHeaders()
+        );
 
-    setActiveTab("watchlist");
+        await getWatchlist();
+
+        setActiveTab("watchlist");
+
+    } catch(error) {
+
+        console.log(error);
+        alert("Could not add movie to watchlist");
+
+    }
 }
 
     async function removeWatchlist(id){
 
+    try {
+
         await axios.delete(
-    `${API_URL}/watchlist/${id}`
-    );
+            `${API_URL}/watchlist/${id}`,
+            getAuthHeaders()
+        );
 
 
         setWatchlist(
@@ -102,13 +144,37 @@ function Home() {
             )
         );
 
+
+    } catch(error){
+
+        console.log(error);
+        alert("Could not remove movie");
+
     }
 
-   const exportWatchlist = () => {
-    window.open(
+}
+
+   const exportWatchlist = async () => {
+
+    const response = await axios.get(
         `${API_URL}/export-watchlist`,
-        "_blank"
+        {
+            headers:{
+                Authorization:
+                `Bearer ${localStorage.getItem("token")}`
+            },
+            responseType:"blob"
+        }
     );
+
+
+    const url = window.URL.createObjectURL(
+        response.data
+    );
+
+
+    window.open(url);
+
 };
 
     return (
@@ -119,22 +185,9 @@ function Home() {
              Movie Compass - Pick A Movie 
             </h1>
 
-            <div className="search-box">
-                <input
-                    type="text"
-                    placeholder="Search movie..."
-                    value={movie}
-                    onChange={
-                        e => setMovie(e.target.value)
-                    }
-                />
+            <h3> Welcome {username} </h3>
 
-                <button onClick={search}>
-                    Search
-                </button>
-
-            </div>
-
+            
             <div className="tabs">
 
     <button
@@ -155,13 +208,34 @@ function Home() {
 </button>
 
     <button
-        className={activeTab === "watchlist" ? "active" : ""}
-        onClick={() => setActiveTab("watchlist")}>
-        Watchlist
-    </button>
+    className={activeTab === "watchlist" ? "active" : ""}
+    onClick={() => {
+        setActiveTab("watchlist");
+        getWatchlist();
+    }}
+>
+Watchlist
+</button>
 
     
 </div>
+
+            <div className="search-box">
+                <input
+                    type="text"
+                    placeholder="Search movie..."
+                    value={movie}
+                    onChange={
+                        e => setMovie(e.target.value)
+                    }
+                />
+
+                <button onClick={search}>
+                    Search
+                </button>
+
+            </div>
+
 
   {
 activeTab === "random" && randomMovie && (
