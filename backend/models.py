@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
@@ -26,7 +27,8 @@ class User(db.Model):
     watchlists = db.relationship(
         "Watchlist",
         backref="user",
-        lazy=True
+        lazy=True,
+        cascade="all, delete-orphan"
     )
 
 
@@ -40,11 +42,13 @@ class Watchlist(db.Model):
     )
 
     movie_id = db.Column(
-        db.Integer
+        db.Integer,
+        nullable=False
     )
 
     title = db.Column(
-        db.String(200)
+        db.String(200),
+        nullable=False
     )
 
     poster_path = db.Column(
@@ -59,7 +63,21 @@ class Watchlist(db.Model):
         db.Text
     )
 
+    added_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
     user_id = db.Column(
         db.Integer,
-        db.ForeignKey("users.id")
+        db.ForeignKey("users.id"),
+        nullable=False
+    )
+
+    __table_args__ = (
+        db.UniqueConstraint(
+            "user_id",
+            "movie_id",
+            name="unique_user_movie"
+        ),
     )

@@ -13,7 +13,7 @@ function Home() {
     const [watchlist, setWatchlist] = useState([]);
     const [randomMovie, setRandomMovie] = useState(null);
     
-    const API_URL = "https://movierecommender-xmjo.onrender.com";
+    const API_URL = "https://movierecommender-1-wdhd.onrender.com";
 
     async function search() {
 

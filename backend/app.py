@@ -12,6 +12,7 @@ import math
 import random
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager
+from urllib.parse import quote_plus
 from models import db
 from auth import auth
 
@@ -27,35 +28,59 @@ IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
 
 database_url = os.getenv("DB_URL")
 
-if database_url is None:
-    raise ValueError("DATABASE_URL not found")
+if database_url:
 
-if database_url.startswith("postgres://"):
-    database_url = database_url.replace(
-        "postgres://",
-        "postgresql+psycopg2://",
-        1
+
+    if database_url.startswith("postgres://"):
+        database_url = database_url.replace(
+            "postgres://",
+            "postgresql+psycopg2://",
+            1
+        )
+
+    elif database_url.startswith("postgresql://"):
+        database_url = database_url.replace(
+            "postgresql://",
+            "postgresql+psycopg2://",
+            1
+        )
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
+
+else:
+
+    db_user = os.getenv("DB_USER")
+    db_password = quote_plus(os.getenv("DB_PASSWORD", ""))
+    db_host = os.getenv("DB_HOST", "localhost")
+    db_port = os.getenv("DB_PORT", "3306")
+    db_name = os.getenv("DB_NAME")
+
+    app.config["SQLALCHEMY_DATABASE_URI"] = (
+        f"mysql+pymysql://{db_user}:{db_password}"
+        f"@{db_host}:{db_port}/{db_name}"
     )
 
-elif database_url.startswith("postgresql://"):
-    database_url = database_url.replace(
-        "postgresql://",
-        "postgresql+psycopg2://",
-        1
-    )
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 
 db.init_app(app)
 
 bcrypt = Bcrypt(app)
 
+app.config["JWT_SECRET_KEY"] = os.environ.get(
+    "JWT_SECRET_KEY"
+)
+
 jwt = JWTManager(app)
+
+
 
 app.register_blueprint(auth)
 
 with app.app_context():
     db.create_all()
+
+print(app.config["SQLALCHEMY_DATABASE_URI"])
 
 @app.route("/")
 def home():

@@ -8,7 +8,7 @@ function Login() {
 
     const [password, setPassword] = useState("");
 
-    const API_URL = "http://localhost:5000";
+    const API_URL = "https://movierecommender-1-wdhd.onrender.com";
 
     async function login(e) {
 
@@ -21,8 +21,8 @@ function Login() {
                 `${API_URL}/login`,
 
                 {
-                    username,
-                    password
+                    username: username,
+                    password: password
                 }
 
             );

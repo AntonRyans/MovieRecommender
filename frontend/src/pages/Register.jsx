@@ -8,7 +8,7 @@ function Register() {
 
     const [password, setPassword] = useState("");
 
-    const API_URL = "http://localhost:5000";
+    const API_URL = "https://movierecommender-1-wdhd.onrender.com";
 
     async function register(e) {
 
