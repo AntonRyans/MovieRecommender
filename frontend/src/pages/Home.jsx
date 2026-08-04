@@ -185,7 +185,7 @@ function Home() {
              Movie Compass - Pick A Movie 
             </h1>
 
-            <h3> Welcome {username} </h3>
+            <h3> Welcome {username}! </h3>
 
             
             <div className="tabs">
