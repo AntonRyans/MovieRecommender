@@ -111,7 +111,7 @@ button:hover {
 
     box-sizing: border-box;
 
-    background: #1d1d1d;
+    background: #6f0a0a;
 
     border-bottom: 1px solid #333;
 
@@ -134,7 +134,7 @@ button:hover {
 .nav-left button{
     background: transparent;
     border: none;
-    color: #6f0a0a;
+    color: white;
     padding: 22px 15px;
     cursor: pointer;
     font-size: 16px;
@@ -142,13 +142,13 @@ button:hover {
 }
 
 .nav-left button:hover{
-    color: #6f0a0a;
+    color: white;
 }
 
 .nav-left button.active{
-    background-color: white;
-    color: #6f0a0a;
-    border-bottom: 3px solid white;
+    background-color: #333;
+    color: white;
+    border-bottom: 3px solid #333;
 }
 
 .nav-links button:focus {
