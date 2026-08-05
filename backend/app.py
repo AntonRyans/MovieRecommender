@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 import math
 import random
 from flask_bcrypt import Bcrypt
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import JWTManager, create_access_token
 from flask import request, jsonify, send_file
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from models import db, User, Watchlist
@@ -157,13 +157,26 @@ def get_watchlist():
 
     username = get_jwt_identity()
 
+
     user = User.query.filter_by(
         username=username
     ).first()
 
+    if user is None:
+        return jsonify({
+            "message": "User not found"
+        }), 404
+
     movies = Watchlist.query.filter_by(
         user_id=user.id
     ).all()
+
+    print("Current user:", user.username)
+    print("Movies:", len(movies))
+
+    for m in movies:
+        print(m.title)
+        
 
     return jsonify([
         {
@@ -185,8 +198,13 @@ def add_watchlist():
     username = get_jwt_identity()
 
     user = User.query.filter_by(
-        username=username
+    username=username
     ).first()
+
+    if user is None:
+        return jsonify({
+            "message": "User not found"
+        }), 404
 
     data = request.json
 
@@ -230,6 +248,8 @@ def add_watchlist():
 
     db.session.commit()
 
+    print("Saved:", movie.title)
+
 
     return jsonify({
         "message": "Added to watchlist"
@@ -272,11 +292,7 @@ def remove_watchlist(id):
 @jwt_required()
 def export_watchlist():
 
-    username = get_jwt_identity()
-
-    user = User.query.filter_by(
-        username=username
-    ).first()
+    user_id = int(get_jwt_identity())
 
 
     movies = Watchlist.query.filter_by(

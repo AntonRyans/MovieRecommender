@@ -4,55 +4,53 @@ import "../App.css";
 
 function Home() {
 
-    
-    const [activeTab, setActiveTab] = useState("search");
     const [movie, setMovie] = useState("");
     const [results, setResults] = useState([]);
     const [recommend, setRecommend] = useState([]);
     const [selectedMovie, setSelectedMovie] = useState("");
     const [watchlist, setWatchlist] = useState([]);
     const [randomMovie, setRandomMovie] = useState(null);
+    const [selectedSection, setSelectedSection] = useState("random");
     
     const API_URL = "https://movierecommender-1-wdhd.onrender.com";
 
     const [username, setUsername] = useState("");
 
     useEffect(() => {
+    const savedUsername = localStorage.getItem("username");
+    setUsername(savedUsername);
 
-        const savedUsername = localStorage.getItem(
-            "username"
-        );
-
-        setUsername(savedUsername);
-
-    }, []);
+    getRandomMovie();
+}, []);
 
     const getAuthHeaders = () => ({
     headers: {
         Authorization: `Bearer ${localStorage.getItem("token")}`
     }
+    
 });
 
-    async function search() {
+    async function logout() {
 
-    if (!movie.trim()) return;
+        localStorage.removeItem("token");
+        localStorage.removeItem("username");
 
-    try {
-
-        const res = await axios.get(
-            `${API_URL}/search/${encodeURIComponent(movie)}`
-        );
-
-        setResults(res.data);
-        setActiveTab("search");
-
-    } catch (error) {
-
-        console.error(error);
-        alert("Search failed.");
+        window.location.href = "/login";
 
     }
 
+    async function search() {
+    try {
+        const res = await axios.get(`${API_URL}/search/${movie}`);
+
+        setResults(res.data);
+
+        setSelectedSection("search");
+
+    } catch (err) {
+        console.error(err);
+        alert("Search failed.");
+    }
 }
 
     async function getRandomMovie() {
@@ -64,6 +62,7 @@ function Home() {
 );
 
         setRandomMovie(res.data);
+        setSelectedSection("random");
 
     } catch(error) {
 
@@ -75,36 +74,37 @@ function Home() {
 }
 
     async function getRecommendations(id, title) {
-
     try {
-
-        const res = await axios.get(
-            `${API_URL}/recommend/${id}`
-        );
+        const res = await axios.get(`${API_URL}/recommend/${id}`);
 
         setRecommend(res.data);
         setSelectedMovie(title);
 
-        setActiveTab("recommendations");
+        setSelectedSection("recommendations");
 
-    } catch (error) {
-
-        console.error(error);
-        alert("Could not load recommendations");
-
+    } catch (err) {
+        console.error(err);
     }
 }
 
-    async function getWatchlist(){
-
+    async function getWatchlist() {
+    try {
+       
         const res = await axios.get(
-            `${API_URL}/watchlist`,
-            getAuthHeaders()
-        );
+     `${API_URL}/watchlist`,
+     getAuthHeaders()
+);
 
         setWatchlist(res.data);
 
+        setSelectedSection("watchlist");
+
+        console.log(res.data);
+
+    } catch (err) {
+        console.error(err);
     }
+}
 
     async function addWatchlist(movie) {
 
@@ -118,7 +118,7 @@ function Home() {
 
         await getWatchlist();
 
-        setActiveTab("watchlist");
+        setSelectedSection("watchlist");
 
     } catch(error) {
 
@@ -179,46 +179,63 @@ function Home() {
 
     return (
 
+        <>
+ <nav className="navbar">
+
+    <div className="nav-left">
+
+        <h2 className="logo">Movie Compass</h2>
+
+        <button
+            className={selectedSection === "random" ? "active" : ""}
+            onClick={getRandomMovie}
+        >
+            Random Movie
+        </button>
+
+        <button
+            className={selectedSection === "recommendations" ? "active" : ""}
+            onClick={() => {
+                if (recommend.length > 0) {
+                    setSelectedSection("recommendations");
+                } else {
+                    alert("Search for a movie and generate recommendations first.");
+                }
+            }}
+        >
+            Recommendations
+        </button>
+
+        <button
+            className={selectedSection === "watchlist" ? "active" : ""}
+            onClick={getWatchlist}
+        >
+            Watchlist
+        </button>
+
+    </div>
+
+    <div className="nav-right">
+
+        <span className="username">
+            {username}
+        </span>
+
+        <button
+            className="logout-btn"
+            onClick={logout}
+        >
+            Logout
+        </button>
+
+    </div>
+
+</nav>
+   
+
+
         <div className="container">
 
-            <h1>
-             Movie Compass - Pick A Movie 
-            </h1>
-
-            <h3> Welcome {username}! </h3>
-
-            
-            <div className="tabs">
-
-    <button
-    className={activeTab === "random" ? "active" : ""}
-    onClick={() => {
-        setActiveTab("random");
-        getRandomMovie();
-    }}
-    >
-        Suggest Random Movie
-    </button>
-
-    <button
-    className={activeTab === "recommendations" ? "active" : ""}
-    onClick={() => setActiveTab("recommendations")}
->
-    Recommendations
-</button>
-
-    <button
-    className={activeTab === "watchlist" ? "active" : ""}
-    onClick={() => {
-        setActiveTab("watchlist");
-        getWatchlist();
-    }}
->
-Watchlist
-</button>
-
-    
-</div>
 
             <div className="search-box">
                 <input
@@ -238,7 +255,7 @@ Watchlist
 
 
   {
-activeTab === "random" && randomMovie && (
+selectedSection === "random" && randomMovie && (
     <div className="random-movie">
         <div className="movie-card random-card">
             {randomMovie.poster_path &&
@@ -289,7 +306,7 @@ activeTab === "random" && randomMovie && (
 }
 
 {
-activeTab === "search" && (
+selectedSection === "search" && (
 <>
     <div className="movie-grid">
         {
@@ -342,7 +359,7 @@ activeTab === "search" && (
 }
 
 {
-    activeTab === "recommendations" && (
+    selectedSection === "recommendations" && (
         <>
             <h2>
     Recommendations based on {selectedMovie}
@@ -419,7 +436,7 @@ activeTab === "search" && (
 
 
 {
-    activeTab === "watchlist" && (
+    selectedSection === "watchlist" && (
         <>
             <h2>Watchlist</h2>
 
@@ -479,7 +496,9 @@ activeTab === "search" && (
     )
 }
         </div>
+        </>
     );
 }
+
 
 export default Home;
