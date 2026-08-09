@@ -18,6 +18,10 @@ from models import db, User, Watchlist
 from urllib.parse import quote_plus
 from models import db
 from auth import auth
+from lists import lists
+
+
+
 
 load_dotenv()
 
@@ -79,6 +83,7 @@ jwt = JWTManager(app)
 
 
 app.register_blueprint(auth)
+app.register_blueprint(lists)
 
 with app.app_context():
     db.create_all()
