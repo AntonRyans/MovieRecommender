@@ -38,41 +38,74 @@ def get_lists():
 @jwt_required()
 def create_list():
 
-    username = get_jwt_identity()
+    try:
 
-    data = request.get_json()
+        user_id = get_jwt_identity()
 
-    name = data.get("name")
-    description = data.get("description", "")
-    is_public = data.get("is_public", False)
+        print("JWT USER ID:", user_id)
 
-    if not name or not name.strip():
+        data = request.get_json()
+
+        print("LIST DATA:", data)
+
+        name = data.get("name")
+        description = data.get("description", "")
+        is_public = data.get("is_public", False)
+
+        if not name or not name.strip():
+
+            return jsonify({
+                "message": "List name is required"
+            }), 400
+
+        # Make sure the user actually exists
+        from models import User
+
+        user = User.query.get(user_id)
+
+        if not user:
+
+            return jsonify({
+                "message": "User not found"
+            }), 404
+
+        new_list = List(
+            name=name.strip(),
+            description=description,
+            is_public=is_public,
+            user_id=user.id
+        )
+
+        db.session.add(new_list)
+
+        db.session.commit()
 
         return jsonify({
-            "message": "List name is required"
-        }), 400
 
-    new_list = List(
-        name=name.strip(),
-        description=description,
-        is_public=is_public,
-        user_id=username
-    )
+            "message": "List created successfully",
 
-    db.session.add(new_list)
-    db.session.commit()
+            "list": {
+                "id": new_list.id,
+                "name": new_list.name,
+                "description": new_list.description,
+                "is_public": new_list.is_public,
+                "share_token": new_list.share_token,
+                "movies_count": 0
+            }
 
-    return jsonify({
-        "message": "List created successfully",
-        "list": {
-            "id": new_list.id,
-            "name": new_list.name,
-            "description": new_list.description,
-            "is_public": new_list.is_public,
-            "share_token": new_list.share_token,
-            "movies_count": 0
-        }
-    }), 201
+        }), 201
+
+    except Exception as e:
+
+        db.session.rollback()
+
+        print("CREATE LIST ERROR:", str(e))
+
+        return jsonify({
+            "message": "Could not create list",
+            "error": str(e)
+        }), 500
+
 
 
 @lists.route("/lists/<int:list_id>", methods=["GET"])

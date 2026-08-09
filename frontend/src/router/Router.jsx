@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import Home from "../pages/Home";
-import SharedList from "./pages/SharedList";
+import SharedList from "../pages/SharedList";
 
 
 function Router() {
@@ -28,7 +28,7 @@ function Router() {
                     path="/register" 
                     element={<Register />} 
                 />
-                           
+
                 <Route
                     path="/shared-list/:shareToken"
                     element={<SharedList />}
