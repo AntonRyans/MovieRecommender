@@ -130,6 +130,11 @@ class List(db.Model):
         cascade="all, delete-orphan"
     )
 
+    list_owner = db.relationship(
+    "User",
+    backref="lists"
+)
+
 
 class ListMovie(db.Model):
 

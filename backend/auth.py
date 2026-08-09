@@ -76,8 +76,8 @@ def login():
         }), 401
 
     token = create_access_token(
-        identity=user.username)
-    
+    identity=str(user.id)
+)
 
     return jsonify({
         "token": token,
