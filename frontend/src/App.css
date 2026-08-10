@@ -397,9 +397,10 @@ button:hover {
 
 .lists-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    margin-bottom: 30px;
+    width: 80%;
+    margin: 0 auto 30px auto;
 }
 
 .lists-header p {
@@ -433,9 +434,11 @@ button:hover {
 
 .list-card-title {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     gap: 10px;
+    width: 80%;
+    margin: 0 auto 30px auto;
 }
 
 .list-card-title h3 {
@@ -489,9 +492,11 @@ button:hover {
 
 .list-details-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    margin-bottom: 30px;
+    gap: 10px;
+    width: 80%;
+    margin: 0 auto 30px auto;
 }
 
 .list-modal-overlay {

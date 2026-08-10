@@ -743,14 +743,16 @@ selectedSection === "random" && randomMovie && (
                             </p>
                         </div>
 
-                        <button
+                        
+                    </div>
+
+                    <button
                             className="create-list-btn"
                             onClick={() => setShowCreateList(true)}
                         >
                             + Create List
                         </button>
 
-                    </div>
 
 
                     {lists.length === 0 ? (
@@ -797,8 +799,8 @@ selectedSection === "random" && randomMovie && (
 
                                             <span>
                                                 {list.is_public
-                                                    ? "🌎 Public"
-                                                    : "🔒 Private"}
+                                                    ? "Public"
+                                                    : "Private"}
                                             </span>
 
                                         </div>
@@ -881,14 +883,18 @@ selectedSection === "random" && randomMovie && (
 
                             <span>
                                 {selectedList.is_public
-                                    ? "🌎 Public"
-                                    : "🔒 Private"}
+                                    ? "Public"
+                                    : "Private"}
                             </span>
 
                         </div>
 
 
-                        {selectedList.is_public && (
+                        
+
+                    </div>
+
+{selectedList.is_public && (
 
                             <button
                                 onClick={() =>
@@ -899,9 +905,6 @@ selectedSection === "random" && randomMovie && (
                             </button>
 
                         )}
-
-                    </div>
-
 
                     {!selectedList.movies ||
                     selectedList.movies.length === 0 ? (
@@ -1110,8 +1113,8 @@ selectedSection === "random" && randomMovie && (
 
                                         <span>
                                             {list.is_public
-                                                ? "🌎"
-                                                : "🔒"}
+                                                ? "Public"
+                                                : "Private"}
                                         </span>
 
                                     </button>

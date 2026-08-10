@@ -115,7 +115,7 @@ function SharedList() {
                         </p>
 
                         <span>
-                            🌎 Public List
+                            Public List
                         </span>
 
                     </div>
