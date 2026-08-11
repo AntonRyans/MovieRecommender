@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import "../App.css";
+import MovieChatbot from "../components/MovieChatbot";
 
 function Home() {
 
@@ -371,6 +372,14 @@ function Home() {
         <h2 className="logo">Movie Compass</h2>
 
         <button
+                onClick={() =>
+                    setSelectedSection("chatbot")
+                }
+            >
+                AI Assistant
+        </button>
+
+        <button
             className={selectedSection === "random" ? "active" : ""}
             onClick={getRandomMovie}
         >
@@ -722,6 +731,10 @@ selectedSection === "random" && randomMovie && (
     </div>
 )
 }
+
+{selectedSection === "chatbot" && (
+    <MovieChatbot />
+)}
 
 {
     selectedSection === "lists" && (

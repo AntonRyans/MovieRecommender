@@ -594,3 +594,78 @@ button:hover {
 .list-selection button:hover {
     background: #333;
 }
+
+/* =========================================
+   MOVIE CHATBOT OVERRIDES
+   ========================================= */
+
+.movie-chatbot {
+    width: 100%;
+    max-width: 1000px;
+    height: 720px;
+
+    margin: 30px auto;
+
+    display: flex;
+    flex-direction: column;
+
+    background: #ffffff;
+    color: #111111;
+
+    border-radius: 18px;
+    overflow: hidden;
+
+    border: 1px solid #e5e5e5;
+
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+}
+
+.movie-chatbot h2,
+.movie-chatbot h3,
+.movie-chatbot h4,
+.movie-chatbot p {
+    margin-top: 0;
+}
+
+.movie-chatbot button {
+    width: auto;
+    margin-top: 0;
+    transform: none;
+    opacity: 1;
+}
+
+.movie-chatbot .chat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.movie-chatbot .chat-header h2 {
+    margin: 0;
+    color: white;
+    font-size: 22px;
+}
+
+.movie-chatbot .chat-header p {
+    margin: 5px 0 0;
+    color: #bdbdbd;
+}
+
+.movie-chatbot .suggestions button {
+    width: auto;
+    margin-top: 0;
+}
+
+.movie-chatbot .chat-input button {
+    width: auto;
+    margin-top: 0;
+}
+
+.movie-chatbot .chat-movie-info h4 {
+    margin: 0 0 7px;
+    color: #171717;
+}
+
+.movie-chatbot .chat-movie-info p {
+    margin: 4px 0;
+}
