@@ -3,9 +3,6 @@ import random
 import requests
 
 from flask import Blueprint, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
-
-from models import db, Watchlist
 
 
 movies = Blueprint(
@@ -16,17 +13,40 @@ movies = Blueprint(
 
 TMDB_BASE_URL = "https://api.themoviedb.org/3"
 
-TMDB_API_KEY = os.getenv(
-    "TMDB_API_KEY"
-)
+TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 
 
-def tmdb_headers():
+# ==================================================
+# TMDB REQUEST HELPER
+# ==================================================
 
-    return {
-        "Authorization": f"Bearer {TMDB_API_KEY}",
-        "accept": "application/json"
-    }
+def tmdb_request(endpoint, params=None):
+    """
+    Make a request to TMDB using the TMDB API key.
+    """
+
+    if not TMDB_API_KEY:
+        print("TMDB ERROR: TMDB_API_KEY is missing")
+
+        return None
+
+    if params is None:
+        params = {}
+
+    params["api_key"] = TMDB_API_KEY
+
+    response = requests.get(
+        f"{TMDB_BASE_URL}{endpoint}",
+        params=params,
+        timeout=10
+    )
+
+    print(
+        f"TMDB REQUEST: {endpoint} "
+        f"STATUS: {response.status_code}"
+    )
+
+    return response
 
 
 # ==================================================
@@ -34,39 +54,38 @@ def tmdb_headers():
 # ==================================================
 
 @movies.route(
-    "/search/<path:title>",
+    "/search/<title>",
     methods=["GET"]
 )
 def search_movies(title):
 
     if not title.strip():
-
         return jsonify({
             "error": "Movie title is required"
         }), 400
 
     try:
 
-        response = requests.get(
-            f"{TMDB_BASE_URL}/search/movie",
-
-            headers=tmdb_headers(),
-
-            params={
+        response = tmdb_request(
+            "/search/movie",
+            {
                 "query": title,
                 "language": "en-US",
                 "include_adult": False
-            },
-
-            timeout=10
+            }
         )
+
+        if response is None:
+            return jsonify({
+                "error": "TMDB API key is not configured"
+            }), 500
 
         response.raise_for_status()
 
         data = response.json()
 
         return jsonify(
-            data.get("results", [])
+            data.get("results", [])[:10]
         ), 200
 
     except requests.RequestException as e:
@@ -93,17 +112,17 @@ def movie_details(movie_id):
 
     try:
 
-        response = requests.get(
-            f"{TMDB_BASE_URL}/movie/{movie_id}",
-
-            headers=tmdb_headers(),
-
-            params={
+        response = tmdb_request(
+            f"/movie/{movie_id}",
+            {
                 "language": "en-US"
-            },
-
-            timeout=10
+            }
         )
+
+        if response is None:
+            return jsonify({
+                "error": "TMDB API key is not configured"
+            }), 500
 
         response.raise_for_status()
 
@@ -135,24 +154,53 @@ def random_movie():
 
     try:
 
-        # Get popular movies first
-        response = requests.get(
+        if not TMDB_API_KEY:
+            print(
+                "RANDOM MOVIE ERROR: "
+                "TMDB_API_KEY is missing"
+            )
 
-            f"{TMDB_BASE_URL}/movie/popular",
+            return jsonify({
+                "error": "TMDB API key is not configured"
+            }), 500
 
-            headers=tmdb_headers(),
+        # Get a random page of popular movies
+        page = random.randint(1, 5)
 
-            params={
+        response = tmdb_request(
+            "/movie/popular",
+            {
                 "language": "en-US",
-                "page": random.randint(1, 5)
-            },
-
-            timeout=10
+                "page": page
+            }
         )
 
-        response.raise_for_status()
+        if response is None:
+            return jsonify({
+                "error": "TMDB API key is not configured"
+            }), 500
 
-        movies_list = response.json().get(
+        print(
+            "TMDB RANDOM STATUS:",
+            response.status_code
+        )
+
+        # Give a useful error if TMDB rejects the request
+        if response.status_code != 200:
+
+            print(
+                "TMDB RANDOM RESPONSE:",
+                response.text[:500]
+            )
+
+            return jsonify({
+                "error": "TMDB rejected the request",
+                "status": response.status_code
+            }), 500
+
+        data = response.json()
+
+        movies_list = data.get(
             "results",
             []
         )
@@ -182,6 +230,17 @@ def random_movie():
             "error": "Unable to get random movie"
         }), 500
 
+    except Exception as e:
+
+        print(
+            "RANDOM MOVIE UNEXPECTED ERROR:",
+            e
+        )
+
+        return jsonify({
+            "error": "Internal server error"
+        }), 500
+
 
 # ==================================================
 # RECOMMEND MOVIES
@@ -195,26 +254,25 @@ def recommend_movies(movie_id):
 
     try:
 
-        response = requests.get(
-
-            f"{TMDB_BASE_URL}/movie/{movie_id}/recommendations",
-
-            headers=tmdb_headers(),
-
-            params={
+        response = tmdb_request(
+            f"/movie/{movie_id}/recommendations",
+            {
                 "language": "en-US",
                 "page": 1
-            },
-
-            timeout=10
+            }
         )
+
+        if response is None:
+            return jsonify({
+                "error": "TMDB API key is not configured"
+            }), 500
 
         response.raise_for_status()
 
         data = response.json()
 
         return jsonify(
-            data.get("results", [])
+            data.get("results", [])[:10]
         ), 200
 
     except requests.RequestException as e:
