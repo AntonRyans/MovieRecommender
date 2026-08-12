@@ -123,65 +123,6 @@ def home():
         "status": "Backend running"
     })
 
-# Search Movie
-@app.route("/search/<title>")
-def search_movie(title):
-    url = f"{BASE_URL}/search/movie"
-    params = {
-        "api_key": API_KEY,
-        "query": title
-    }
-    response = requests.get(url, params=params)
-    data = response.json()
-    if "results" not in data:
-        return jsonify(data), 500
-    return jsonify(data["results"][:10])
-
-# Suggest Random Movie
-@app.route("/random")
-def random_movie():
-    url = f"{BASE_URL}/discover/movie"
-    params = {
-        "api_key": API_KEY,
-        "sort_by": "popularity.desc"
-    }
-    response = requests.get(url, params=params)
-    data = response.json()
-    if "results" not in data or len(data["results"]) == 0:
-        return jsonify({"error": "No movies found"}), 404
-    movies = data["results"]
-    movie = random.choice(movies)
-    return jsonify(movie)
-
-# Show Movie Details
-@app.route("/movie/<int:id>")
-def movie_details(id):
-    url = f"{BASE_URL}/movie/{id}"
-
-    response = requests.get(
-        url,
-        params={
-            "api_key": API_KEY
-        }
-    )
-
-    return jsonify(response.json())
-
-# Show Recommendations
-@app.route("/recommend/<int:id>")
-def recommendations(id):
-    url = f"{BASE_URL}/movie/{id}/recommendations"
-    response = requests.get(
-        url,
-        params={
-            "api_key": API_KEY
-        }
-    )
-    data = response.json()
-    if "results" not in data:
-        return jsonify(data), 500
-    return jsonify(data["results"][:10])
-
 @app.route("/poster/<path:poster_path>")
 def poster(poster_path):
 
