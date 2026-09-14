@@ -6,12 +6,13 @@ import { useNavigate } from "react-router-dom";
 function Login() {
 
     const [username, setUsername] = useState("");
-
     const [password, setPassword] = useState("");
 
-    const API_URL = "https://movierecommender-1-wdhd.onrender.com";
+    const API_URL =
+        "https://movierecommender-1-wdhd.onrender.com";
 
     const navigate = useNavigate();
+
 
     async function login(e) {
 
@@ -20,95 +21,85 @@ function Login() {
         try {
 
             const res = await axios.post(
-
                 `${API_URL}/login`,
-
                 {
                     username: username,
                     password: password
+                },
+                {
+                    withCredentials: true
                 }
-
-            );
-
-            localStorage.setItem(
-                "token",
-                res.data.token
             );
 
             localStorage.setItem(
                 "username",
-                username
+                res.data.username
             );
 
             alert("Login successful!");
 
             navigate("/home");
 
+        } catch (error) {
+
+            alert(
+                error.response?.data?.message ||
+                "Incorrect username or password."
+            );
         }
-
-        catch {
-
-            alert("Incorrect username or password.");
-
-        }
-
     }
+
 
     return (
 
         <div className="auth-page">
 
-             <div className="auth-card">
+            <div className="auth-card">
 
-            <h1>Movie Compass</h1>
+                <h1>Movie Compass</h1>
 
-            <h2>Login</h2>
+                <h2>Login</h2>
 
-            <form className="auth-form" onSubmit={login}>
+                <form
+                    className="auth-form"
+                    onSubmit={login}
+                >
 
-                <input
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) =>
+                            setUsername(e.target.value)
+                        }
+                    />
 
-                    type="text"
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) =>
+                            setPassword(e.target.value)
+                        }
+                    />
 
-                    placeholder="Username"
+                    <button type="submit">
+                        Login
+                    </button>
 
-                    value={username}
+                </form>
 
-                    onChange={(e)=>setUsername(e.target.value)}
-
-                />
-
-                <input
-
-                    type="password"
-
-                    placeholder="Password"
-
-                    value={password}
-
-                    onChange={(e)=>setPassword(e.target.value)}
-
-                />
-
-                <button>
-
-                    Login
-
-                </button>
-
-            </form>
-
-            <p className="auth-link">
-            Don't have an account?
-            <a href="/register"> Register</a>
-        </p>
+                <p className="auth-link">
+                    Don't have an account?
+                    <a href="/register">
+                        {" "}Register
+                    </a>
+                </p>
 
             </div>
 
         </div>
-
     );
-
 }
 
 export default Login;

@@ -27,39 +27,89 @@ function Home() {
 
     const [username, setUsername] = useState("");
 
+
     useEffect(() => {
-    const savedUsername = localStorage.getItem("username");
-    setUsername(savedUsername);
 
-    getRandomMovie();
-    getLists();
-}, []);
+        const savedUsername =
+            localStorage.getItem("username");
 
-    const getAuthHeaders = () => ({
-    headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`
+        setUsername(savedUsername || "");
+
+        getRandomMovie();
+        getLists();
+
+    }, []);
+
+    function getCookie(name) {
+
+    const value =
+        `; ${document.cookie}`;
+
+    const parts =
+        value.split(`; ${name}=`);
+
+    if (parts.length === 2) {
+
+        return parts
+            .pop()
+            .split(";")
+            .shift();
+
     }
-    
-});
+
+    return null;
+}
+
+
+    const getAuthConfig = (method = "GET") => {
+
+    const config = {
+        withCredentials: true
+    };
+
+    if (
+        method === "POST" ||
+        method === "PUT" ||
+        method === "PATCH" ||
+        method === "DELETE"
+    ) {
+
+        const csrfToken =
+            getCookie("csrf_access_token");
+
+        if (csrfToken) {
+
+            config.headers = {
+                "X-CSRF-TOKEN": csrfToken
+            };
+
+        }
+    }
+
+    return config;
+};
 
 
     async function getLists() {
 
-        try {
+    try {
 
-            const res = await axios.get(
-                `${API_URL}/lists`,
-                getAuthHeaders()
-            );
+        const res = await axios.get(
+            `${API_URL}/lists`,
+            getAuthConfig()
+        );
 
-            setLists(res.data);
+        setLists(res.data);
 
-        } catch (err) {
+    } catch (err) {
 
-            console.error("Could not get lists:", err);
+        console.error(
+            "Could not get lists:",
+            err
+        );
 
-        }
     }
+}
 
 
     async function createList() {
@@ -78,7 +128,7 @@ function Home() {
                     description: listDescription,
                     is_public: listIsPublic
                 },
-                getAuthHeaders()
+                getAuthConfig()
             );
 
             setListName("");
@@ -107,7 +157,7 @@ function Home() {
 
             const res = await axios.get(
                 `${API_URL}/lists/${id}`,
-                getAuthHeaders()
+                getAuthConfig()
             );
 
             setSelectedList(res.data);
@@ -130,7 +180,7 @@ function Home() {
 
             await axios.delete(
                 `${API_URL}/lists/${id}`,
-                getAuthHeaders()
+                getAuthConfig()
             );
 
             setSelectedList(null);
@@ -154,7 +204,7 @@ function Home() {
             await axios.post(
                 `${API_URL}/lists/${listId}/movies`,
                 movieToAdd,
-                getAuthHeaders()
+                getAuthConfig()
             );
 
             setShowAddToList(false);
@@ -186,7 +236,7 @@ function Home() {
 
             await axios.delete(
                 `${API_URL}/lists/${listId}/movies/${movieId}`,
-                getAuthHeaders()
+                getAuthConfig()
             );
 
             await getList(listId);
@@ -211,18 +261,33 @@ function Home() {
 
     }
 
+async function logout() {
 
+    try {
 
+        await axios.post(
+            `${API_URL}/logout`,
+            {},
+            {
+                withCredentials: true
+            }
+        );
 
+    } catch (error) {
 
-    async function logout() {
+        console.error(
+            "Logout error:",
+            error
+        );
 
-        localStorage.removeItem("token");
+    } finally {
+
         localStorage.removeItem("username");
 
         window.location.href = "/login";
 
     }
+}
 
     async function search() {
     try {
@@ -272,22 +337,31 @@ function Home() {
     }
 }
 
-    async function getWatchlist() {
+   async function getWatchlist() {
+
     try {
-       
+
         const res = await axios.get(
-     `${API_URL}/watchlist`,
-     getAuthHeaders()
-);
+            `${API_URL}/watchlist`,
+            getAuthConfig()
+        );
 
         setWatchlist(res.data);
-
         setSelectedSection("watchlist");
 
         console.log(res.data);
 
     } catch (err) {
-        console.error(err);
+
+        console.error(
+            "Could not get watchlist:",
+            err
+        );
+
+        if (err.response?.status === 401) {
+            alert("Your session has expired. Please log in again.");
+        }
+
     }
 }
 
@@ -298,30 +372,33 @@ function Home() {
         await axios.post(
             `${API_URL}/watchlist`,
             movie,
-            getAuthHeaders()
+            getAuthConfig()
         );
 
         await getWatchlist();
 
         setSelectedSection("watchlist");
 
-    } catch(error) {
+    } catch (error) {
 
         console.log(error);
-        alert("Could not add movie to watchlist");
+
+        alert(
+            error.response?.data?.message ||
+            "Could not add movie to watchlist"
+        );
 
     }
 }
 
-    async function removeWatchlist(id){
+    async function removeWatchlist(id) {
 
     try {
 
         await axios.delete(
             `${API_URL}/watchlist/${id}`,
-            getAuthHeaders()
+            getAuthConfig()
         );
-
 
         setWatchlist(
             watchlist.filter(
@@ -329,37 +406,43 @@ function Home() {
             )
         );
 
-
-    } catch(error){
+    } catch (error) {
 
         console.log(error);
+
         alert("Could not remove movie");
 
     }
-
 }
+  const exportWatchlist = async () => {
 
-   const exportWatchlist = async () => {
+    try {
 
-    const response = await axios.get(
-        `${API_URL}/export-watchlist`,
-        {
-            headers:{
-                Authorization:
-                `Bearer ${localStorage.getItem("token")}`
-            },
-            responseType:"blob"
-        }
-    );
+        const response = await axios.get(
+            `${API_URL}/export-watchlist`,
+            {
+                withCredentials: true,
+                responseType: "blob"
+            }
+        );
 
+        const url =
+            window.URL.createObjectURL(
+                response.data
+            );
 
-    const url = window.URL.createObjectURL(
-        response.data
-    );
+        window.open(url);
 
+    } catch (error) {
 
-    window.open(url);
+        console.error(
+            "Could not export watchlist:",
+            error
+        );
 
+        alert("Could not export watchlist.");
+
+    }
 };
 
     return (

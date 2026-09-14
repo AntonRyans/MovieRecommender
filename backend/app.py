@@ -1,25 +1,20 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response, send_file
+
 from flask_cors import CORS
-from flask import Response
+
 from PIL import Image, ImageDraw, ImageFont
 from io import BytesIO
-from flask import send_file
+
 import requests
 import os
-import json
-from dotenv import load_dotenv
-
-load_dotenv()
-
 import math
 import random
+
+from dotenv import load_dotenv
+
 from flask_bcrypt import Bcrypt
-from flask_jwt_extended import JWTManager, create_access_token
-from flask import request, jsonify, send_file
-from flask_jwt_extended import jwt_required, get_jwt_identity
-from models import db, User, Watchlist
-from urllib.parse import quote_plus
-from models import db
+from flask_jwt_extended import JWTManager
+
 from auth import auth
 from lists import lists
 from routes.ai_chat import ai_chat
@@ -27,7 +22,15 @@ from routes.movies import movies
 from routes.watchlist import watchlist
 
 
+load_dotenv()
+
+
 app = Flask(__name__)
+
+
+# --------------------------------------------------
+# CORS
+# --------------------------------------------------
 
 CORS(
     app,
@@ -39,9 +42,11 @@ CORS(
             ]
         }
     },
+    supports_credentials=True,
     allow_headers=[
         "Content-Type",
-        "Authorization"
+        "Authorization",
+        "X-CSRF-TOKEN"
     ],
     methods=[
         "GET",
@@ -52,70 +57,56 @@ CORS(
     ]
 )
 
-API_KEY = os.getenv("TMDB_API_KEY")
 
-BASE_URL = "https://api.themoviedb.org/3"
-IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
-
-database_url = os.getenv("DB_URL")
-
-if database_url:
-
-
-    if database_url.startswith("postgres://"):
-        database_url = database_url.replace(
-            "postgres://",
-            "postgresql+psycopg2://",
-            1
-        )
-
-    elif database_url.startswith("postgresql://"):
-        database_url = database_url.replace(
-            "postgresql://",
-            "postgresql+psycopg2://",
-            1
-        )
-
-    app.config["SQLALCHEMY_DATABASE_URI"] = database_url
-
-else:
-
-    db_user = os.getenv("DB_USER")
-    db_password = quote_plus(os.getenv("DB_PASSWORD", ""))
-    db_host = os.getenv("DB_HOST", "localhost")
-    db_port = os.getenv("DB_PORT", "3306")
-    db_name = os.getenv("DB_NAME")
-
-    app.config["SQLALCHEMY_DATABASE_URI"] = (
-        f"mysql+pymysql://{db_user}:{db_password}"
-        f"@{db_host}:{db_port}/{db_name}"
-    )
-
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-
-
-db.init_app(app)
-
-bcrypt = Bcrypt(app)
+# --------------------------------------------------
+# JWT
+# --------------------------------------------------
 
 app.config["JWT_SECRET_KEY"] = os.environ.get(
     "JWT_SECRET_KEY"
 )
 
+# JWT stored in cookies
+app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
+
+# Cookie security
+app.config["JWT_COOKIE_SECURE"] = True
+app.config["JWT_COOKIE_HTTPONLY"] = True
+app.config["JWT_COOKIE_SAMESITE"] = "None"
+
+# Cookie path
+app.config["JWT_ACCESS_COOKIE_PATH"] = "/"
+
+# CSRF protection for cookie-based JWT
+app.config["JWT_COOKIE_CSRF_PROTECT"] = True
+app.config["JWT_ACCESS_CSRF_HEADER_NAME"] = "X-CSRF-TOKEN"
+
+
 jwt = JWTManager(app)
 
+bcrypt = Bcrypt(app)
 
+
+# --------------------------------------------------
+# APIs
+# --------------------------------------------------
+
+API_KEY = os.getenv("TMDB_API_KEY")
+
+BASE_URL = "https://api.themoviedb.org/3"
+
+IMAGE_BASE = "https://image.tmdb.org/t/p/w500"
+
+
+# --------------------------------------------------
+# Blueprints
+# --------------------------------------------------
 
 app.register_blueprint(auth)
 app.register_blueprint(lists)
 app.register_blueprint(movies)
 app.register_blueprint(watchlist)
 app.register_blueprint(ai_chat)
-
-with app.app_context():
-    db.create_all()
-
-print(app.config["SQLALCHEMY_DATABASE_URI"])
 
 @app.route("/")
 def home():

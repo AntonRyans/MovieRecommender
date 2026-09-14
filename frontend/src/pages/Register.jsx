@@ -5,14 +5,22 @@ import "./Auth.css";
 function Register() {
 
     const [username, setUsername] = useState("");
-
     const [password, setPassword] = useState("");
 
-    const API_URL = "https://movierecommender-1-wdhd.onrender.com";
+    const API_URL =
+        "https://movierecommender-1-wdhd.onrender.com";
+
 
     async function register(e) {
 
         e.preventDefault();
+
+        if (!username.trim() || !password) {
+
+            alert("Username and password are required.");
+
+            return;
+        }
 
         try {
 
@@ -21,25 +29,33 @@ function Register() {
                 `${API_URL}/register`,
 
                 {
-                    username,
-                    password
+                    username: username.trim(),
+                    password: password
+                },
+
+                {
+                    withCredentials: true
                 }
 
             );
 
             alert("Account created!");
 
-            window.location.href="/login";
+            window.location.href = "/login";
 
         }
 
-        catch(error){
+        catch (error) {
 
-            alert(error.response.data.message);
+            alert(
+                error.response?.data?.message ||
+                "Registration failed."
+            );
 
         }
 
     }
+
 
     return (
 
@@ -47,49 +63,44 @@ function Register() {
 
             <div className="auth-card">
 
-            <h1>Movie Compass</h1>
+                <h1>Movie Compass</h1>
 
-            <h2>Create Account</h2>
+                <h2>Create Account</h2>
 
-            <form className="auth-form" onSubmit={register}>
+                <form
+                    className="auth-form"
+                    onSubmit={register}
+                >
 
-                <input
+                    <input
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) =>
+                            setUsername(e.target.value)
+                        }
+                    />
 
-                    type="text"
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) =>
+                            setPassword(e.target.value)
+                        }
+                    />
 
-                    placeholder="Username"
+                    <button type="submit">
+                        Register
+                    </button>
 
-                    value={username}
-
-                    onChange={(e)=>setUsername(e.target.value)}
-
-                />
-
-                <input
-
-                    type="password"
-
-                    placeholder="Password"
-
-                    value={password}
-
-                    onChange={(e)=>setPassword(e.target.value)}
-
-                />
-
-                <button>
-
-                    Register
-
-                </button>
-
-            </form>
+                </form>
 
             </div>
+
         </div>
 
     );
-
 }
 
 export default Register;
